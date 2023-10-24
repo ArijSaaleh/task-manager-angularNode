@@ -3,7 +3,8 @@ const express = require("express");
 require("dotenv").config({ path: __dirname + "/.env" });
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-
+const ApiError = require("./utils/apiError");
+const globalError = require("./Middleware/errorMiddleware");
 const connectDB = require("./database/connect");
 const { authMiddleware } = require("./Middleware/authMiddleware");
 const taskRoute = require("./Routes/taskRoute");
@@ -32,13 +33,11 @@ app.use("/api/v1/tasks", taskRoute);
 app.use("/api/v1/users", userRoute);
 //handling other routes not included
 app.all("*", (req, res, next) => {
-  const err = new Error(`Can't find this route: ${req.originalUrl}`);
-  next(err.message);
+  next(new ApiError("Can't find this route", 400));
 });
 // Global error handling middelware
-app.use((err, req, res, next) => {
-  res.status(400).json({ err });
-});
+app.use(globalError);
+
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
   console.log(`App running on port ${PORT}`);

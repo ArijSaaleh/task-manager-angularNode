@@ -1,7 +1,7 @@
 const TaskModel = require("../Models/taskModel");
 const slugify = require("slugify");
 const asyncHandler = require("express-async-handler");
-
+const ApiError = require("../utils/apiError");
 // @desc    get list of tasks
 // @Route   GET /api/v1/tasks
 // @access  Private
@@ -15,11 +15,11 @@ exports.getTasks = asyncHandler(async (req, res) => {
 // @desc    get one task by id
 // @Route   GET /api/v1/tasks/:id
 // @access  Private
-exports.getTaskById = asyncHandler(async (req, res) => {
+exports.getTaskById = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const task = await TaskModel.findById(id);
   if (!task) {
-    res.status(404).json({ msg: `No Tasks for this ${id}` });
+    return next(new ApiError(`No Task found for the id: ${id}`, 404));
   }
   res.status(200).json({ data: task });
 });
@@ -42,7 +42,7 @@ exports.createTask = asyncHandler(async (req, res) => {
 // @desc    Update one task by id
 // @Route   PUT /api/v1/tasks/:id
 // @access  Private
-exports.updateTask = asyncHandler(async (req, res) => {
+exports.updateTask = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const { title, description, dueDate, priority, status } = req.body;
   const task = await TaskModel.findOneAndUpdate(
@@ -51,20 +51,18 @@ exports.updateTask = asyncHandler(async (req, res) => {
     { new: true }
   );
   if (!task) {
-    res
-      .status(404)
-      .json({ msg: `No task found to be updated for the id: ${id}` });
+    return next(new ApiError(`No Task found for the id: ${id}`, 404));
   }
   res.status(200).json({ data: task });
 });
 // @desc    Delete one task by id
 // @Route   DEL /api/v1/tasks/:id
 // @access  Private
-exports.deleteTask = asyncHandler(async (req, res) => {
+exports.deleteTask = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const task = await TaskModel.findByIdAndDelete(id);
   if (!task) {
-    res.status(404).json({ msg: "No Task found to delete!" });
+    return next(new ApiError(`No Task found for the id: ${id}`, 404));
   }
   res.status(200).json({ msg: "Task Deleted" });
 });
