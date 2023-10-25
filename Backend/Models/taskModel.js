@@ -4,7 +4,7 @@ const taskSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      required: [true, "Title unique"],
+      required: [true, "Title must be included"],
       minlength: [10, "too short"],
       maxlength: [20, "too long"],
     }, //  A  and B (ay haja feha espace => api/a-and-b)
