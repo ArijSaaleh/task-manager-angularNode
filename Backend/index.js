@@ -35,11 +35,21 @@ app.use("/api/v1/users", userRoute);
 app.all("*", (req, res, next) => {
   next(new ApiError("Can't find this route", 400));
 });
-// Global error handling middelware
+// Global error handling middelware for express
 app.use(globalError);
 
 const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`App running on port ${PORT}`);
 });
 module.exports = app;
+
+// Handling rejection outside express
+//Events => wakt ysir rejection tsir emit lel event donc lezem listen => yraja3li callback function feha error (callback(err))
+process.on("unhandledRejection", (err) => {
+  console.error(`UnhandledRejection Errors: ${err.name} | ${err.message}`);
+  server.close(() => {
+    console.error("Application shut down");
+    process.exit(1);
+  });
+});
