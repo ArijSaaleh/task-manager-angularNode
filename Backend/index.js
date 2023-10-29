@@ -1,12 +1,15 @@
 const express = require("express");
 
 require("dotenv").config({ path: __dirname + "/.env" });
+
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+
 const ApiError = require("./utils/apiError");
 const globalError = require("./Middleware/errorMiddleware");
+
 const connectDB = require("./database/connect");
-const { authMiddleware } = require("./Middleware/authMiddleware");
+
 const taskRoute = require("./Routes/taskRoute");
 const userRoute = require("./Routes/userRoute");
 
