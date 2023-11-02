@@ -5,7 +5,10 @@ const taskService = require("../Services/taskService");
 const taskValidator = require("../utils/validators/taskValidator");
 
 //router.post("/", taskService.addTask);
-router.route("/").get(taskService.getTasks).post(taskService.createTask);
+router
+  .route("/")
+  .get(taskService.getTasks)
+  .post(taskValidator.createTaskValidator, taskService.createTask);
 
 router
   .route("/:id")

@@ -10,6 +10,7 @@ exports.getTaskValidator = [
 
 exports.createTaskValidator = [
   check("title")
+    .not()
     .isEmpty()
     .withMessage("Title must be included")
     .isLength({ min: 10 })

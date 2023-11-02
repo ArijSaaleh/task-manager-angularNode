@@ -12,7 +12,7 @@ const connectDB = require("./database/connect");
 
 const taskRoute = require("./Routes/taskRoute");
 const userRoute = require("./Routes/userRoute");
-
+const subtaskRoute = require("./Routes/subtaskRoute");
 //express app
 var app = express();
 //database connection methods
@@ -34,6 +34,7 @@ app.use(express.json());
 
 app.use("/api/v1/tasks", taskRoute);
 app.use("/api/v1/users", userRoute);
+app.use("/api/v1/subtasks", subtaskRoute);
 //handling other routes not included
 app.all("*", (req, res, next) => {
   next(new ApiError("Can't find this route", 400));

@@ -7,7 +7,7 @@ const subTaskModel = require("../Models/subTaskModel");
 // @Route   POST /api/v1/subtasks
 // @access  Private
 exports.createSubTask = asyncHandler(async (req, res) => {
-  const { title, description, dueDate, status } = req.body;
+  const { title, description, dueDate, status, task } = req.body;
   const subTask = await subTaskModel.create({
     title,
     slug: slugify(title),
@@ -44,7 +44,7 @@ exports.getSubTaskById = asyncHandler(async (req, res, next) => {
 // @desc    Update one subtask by id
 // @Route   PUT /api/v1/subtasks/:id
 // @access  Private
-exports.updateSubtask = asyncHandler(async (req, res, next) => {
+exports.updateSubTask = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const { title, description, dueDate, status } = req.body;
   const subtask = await subTaskModel.findOneAndUpdate(
