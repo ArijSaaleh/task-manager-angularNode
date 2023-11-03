@@ -18,6 +18,8 @@ exports.createSubTask = asyncHandler(async (req, res) => {
   });
   res.status(201).json({ data: subTask });
 });
+// Nested Route
+// GET /api/v1/subtasks/:taskId/subtasks
 
 // @desc    get all Subtasks
 // @Route   GET /api/v1/subtasks
@@ -26,7 +28,14 @@ exports.getAllSubtasks = asyncHandler(async (req, res) => {
   const page = 1;
   const limit = 5;
   const skip = (page - 1) * limit; //bch neskipi les doc li deja jbet'hom
-  const subtasks = await subTaskModel.find({}).skip(skip).limit(limit);
+  let filterObject = {};
+  if (req.params.taskId) filterObject = { task: req.params.taskId };
+  console.log(req.params.taskId);
+  const subtasks = await subTaskModel
+    .find({ filterObject })
+    .skip(skip)
+    .limit(limit);
+  //.populate({ path: "task", select: "title -_id" });
   res.status(200).json({ results: subtasks.length, page, data: subtasks });
 });
 // @desc    get one subtask by id
@@ -34,7 +43,9 @@ exports.getAllSubtasks = asyncHandler(async (req, res) => {
 // @access  Private
 exports.getSubTaskById = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
-  const subtask = await subTaskModel.findById(id);
+  const subtask = await subTaskModel
+    .findById(id)
+    .populate({ path: "task", select: "title -_id" });
   if (!subtask) {
     return next(new ApiError(`No Subtask found for the id: ${id}`, 404));
   }
@@ -49,7 +60,7 @@ exports.updateSubTask = asyncHandler(async (req, res, next) => {
   const { title, description, dueDate, status } = req.body;
   const subtask = await subTaskModel.findOneAndUpdate(
     { _id: id },
-    { title, slug: slugify(title) },
+    { title, slug: slugify(title), description, dueDate, status },
     { new: true }
   );
   if (!subtask) {

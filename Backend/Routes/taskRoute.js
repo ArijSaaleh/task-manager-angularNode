@@ -3,8 +3,10 @@ const router = express.Router();
 
 const taskService = require("../Services/taskService");
 const taskValidator = require("../utils/validators/taskValidator");
+const subTaskRoute = require("../Routes/subtaskRoute");
 
-//router.post("/", taskService.addTask);
+router.use("/:taskId/subtasks", subTaskRoute);
+
 router
   .route("/")
   .get(taskService.getTasks)

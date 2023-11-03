@@ -2,7 +2,12 @@ const { check } = require("express-validator");
 const validatorMiddleware = require("../../Middleware/validationMiddleware");
 // array of rules
 exports.getSubTaskValidator = [
-  check("id").isMongoId().withMessage("invalid subtask id"),
+  check("id")
+    .isMongoId()
+    .withMessage("invalid subtask id")
+    .not()
+    .isEmpty()
+    .withMessage("no id provided"),
   validatorMiddleware,
 ];
 
