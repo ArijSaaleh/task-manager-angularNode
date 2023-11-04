@@ -3,6 +3,12 @@ const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/apiError");
 const subTaskModel = require("../Models/subTaskModel");
 
+//Nested routes
+exports.setTaskIdToBody = (req, res, next) => {
+  if (!req.body.task) req.body.task = req.params.taskId;
+  next();
+};
+
 // @desc    create a Subtask
 // @Route   POST /api/v1/subtasks
 // @access  Private
@@ -20,7 +26,12 @@ exports.createSubTask = asyncHandler(async (req, res) => {
 });
 // Nested Route
 // GET /api/v1/subtasks/:taskId/subtasks
-
+exports.createFilterObject = (req, res, next) => {
+  let filterObject;
+  if (req.params.taskId) filterObject = { task: req.params.taskId };
+  req.filterObject = filterObject;
+  next();
+};
 // @desc    get all Subtasks
 // @Route   GET /api/v1/subtasks
 // @access  Private
@@ -28,11 +39,8 @@ exports.getAllSubtasks = asyncHandler(async (req, res) => {
   const page = 1;
   const limit = 5;
   const skip = (page - 1) * limit; //bch neskipi les doc li deja jbet'hom
-  let filterObject = {};
-  if (req.params.taskId) filterObject = { task: req.params.taskId };
-  console.log(req.params.taskId);
   const subtasks = await subTaskModel
-    .find({ filterObject })
+    .find(req.filterObject)
     .skip(skip)
     .limit(limit);
   //.populate({ path: "task", select: "title -_id" });
@@ -57,10 +65,10 @@ exports.getSubTaskById = asyncHandler(async (req, res, next) => {
 // @access  Private
 exports.updateSubTask = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
-  const { title, description, dueDate, status } = req.body;
+  const { title, description, dueDate, status, task } = req.body;
   const subtask = await subTaskModel.findOneAndUpdate(
     { _id: id },
-    { title, slug: slugify(title), description, dueDate, status },
+    { title, slug: slugify(title), description, dueDate, status, task },
     { new: true }
   );
   if (!subtask) {

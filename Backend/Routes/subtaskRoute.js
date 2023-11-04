@@ -8,8 +8,12 @@ const subtaskValidator = require("../utils/validators/subtaskValidator");
 
 router
   .route("/")
-  .get(subTaskService.getAllSubtasks)
-  .post(subtaskValidator.createSubTaskValidator, subTaskService.createSubTask);
+  .get(subTaskService.createFilterObject, subTaskService.getAllSubtasks)
+  .post(
+    subTaskService.setTaskIdToBody,
+    subtaskValidator.createSubTaskValidator,
+    subTaskService.createSubTask
+  );
 
 router
   .route("/:id")
